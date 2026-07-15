@@ -82,10 +82,7 @@ export async function exportPlaylistM3U(id: string) {
     lines.push(`#EXTINF:${Math.round(track.duration)},${track.artist} - ${track.title}`);
     lines.push(track.path);
   }
-  downloadBlob(
-    new Blob([lines.join('\n')], { type: 'audio/x-mpegurl' }),
-    `${playlist.name}.m3u8`,
-  );
+  downloadBlob(new Blob([lines.join('\n')], { type: 'audio/x-mpegurl' }), `${playlist.name}.m3u8`);
 }
 
 export async function exportPlaylistJSON(id: string) {

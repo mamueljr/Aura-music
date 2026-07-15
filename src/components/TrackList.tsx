@@ -137,11 +137,7 @@ export const TrackRow = memo(function TrackRow({
         </div>
       ) : showArtwork ? (
         <div className="relative shrink-0">
-          <Artwork
-            coverId={track.coverId}
-            name={track.album || track.title}
-            className="size-10"
-          />
+          <Artwork coverId={track.coverId} name={track.album || track.title} className="size-10" />
           <div className="absolute inset-0 hidden items-center justify-center rounded-lg bg-black/40 group-hover:flex">
             <Play className="size-4 fill-white text-white" />
           </div>
@@ -165,9 +161,7 @@ export const TrackRow = memo(function TrackRow({
 
       <button
         type="button"
-        aria-label={
-          track.favorite ? t('player.removeFromFavorites') : t('player.addToFavorites')
-        }
+        aria-label={track.favorite ? t('player.removeFromFavorites') : t('player.addToFavorites')}
         aria-pressed={!!track.favorite}
         onClick={(e) => {
           e.stopPropagation();

@@ -24,11 +24,7 @@ import { cn } from '@/lib/utils';
 import { player } from '@/services/audio/AudioEngine';
 import { removeFolder, scanFolder } from '@/services/library/scanner';
 import { usePlayerStore } from '@/stores/playerStore';
-import {
-  useSettingsStore,
-  type LanguageSetting,
-  type ThemeSetting,
-} from '@/stores/settingsStore';
+import { useSettingsStore, type LanguageSetting, type ThemeSetting } from '@/stores/settingsStore';
 
 import { AddFolderButton } from '../library/components/AddFolderButton';
 import { ScanProgressBanner } from '../library/components/ScanProgressBanner';

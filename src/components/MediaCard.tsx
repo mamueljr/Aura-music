@@ -56,9 +56,7 @@ export function MediaCard({
             </button>
           ) : null}
         </div>
-        <p className={cn('mt-2 truncate text-sm font-semibold', round && 'text-center')}>
-          {title}
-        </p>
+        <p className={cn('mt-2 truncate text-sm font-semibold', round && 'text-center')}>{title}</p>
         {subtitle ? (
           <p className={cn('truncate text-xs text-muted-foreground', round && 'text-center')}>
             {subtitle}

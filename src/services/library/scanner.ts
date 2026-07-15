@@ -57,9 +57,7 @@ export async function addFolderFromFileList(files: FileList): Promise<void> {
   const { name, files: discovered } = discoverFromFileList(files);
   if (discovered.length === 0) return;
 
-  const folder = (await db.folders.toArray()).find(
-    (f) => f.mode === 'fallback' && f.name === name,
-  );
+  const folder = (await db.folders.toArray()).find((f) => f.mode === 'fallback' && f.name === name);
   let folderId: number;
   if (folder) {
     folderId = folder.id!;

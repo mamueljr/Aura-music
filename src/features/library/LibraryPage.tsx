@@ -224,16 +224,15 @@ function AlbumsView() {
             coverId={album.coverId}
             name={album.name === UNKNOWN_ALBUM ? t('common.unknownAlbum') : album.name}
             title={album.name === UNKNOWN_ALBUM ? t('common.unknownAlbum') : album.name}
-            subtitle={
-              album.artist === UNKNOWN_ARTIST ? t('common.unknownArtist') : album.artist
-            }
+            subtitle={album.artist === UNKNOWN_ARTIST ? t('common.unknownArtist') : album.artist}
             onPlay={() => {
               void (async () => {
                 const tracks = await db.tracks.where('album').equals(album.name).toArray();
                 const sorted = tracks
                   .filter((tr) => (tr.albumArtist || tr.artist) === album.artist)
                   .sort(
-                    (a, b) => (a.discNo ?? 1) - (b.discNo ?? 1) || (a.trackNo ?? 0) - (b.trackNo ?? 0),
+                    (a, b) =>
+                      (a.discNo ?? 1) - (b.discNo ?? 1) || (a.trackNo ?? 0) - (b.trackNo ?? 0),
                   );
                 await player.playTracks(
                   sorted.map((tr) => tr.id),

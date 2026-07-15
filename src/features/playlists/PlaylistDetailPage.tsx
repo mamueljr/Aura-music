@@ -98,7 +98,9 @@ export default function PlaylistDetailPage() {
           t('common.minutes'),
         )}`}
         coverName={playlist.name}
-        onPlay={tracks.length ? () => void player.playTracks(ids, 0, { shuffle: false }) : undefined}
+        onPlay={
+          tracks.length ? () => void player.playTracks(ids, 0, { shuffle: false }) : undefined
+        }
         onShuffle={
           tracks.length
             ? () =>
@@ -296,7 +298,11 @@ function PlaylistRow({
         </span>
       </button>
 
-      <TrackMenu track={track} onRemove={onRemove} removeLabel={t('playlists.removeFromPlaylist')} />
+      <TrackMenu
+        track={track}
+        onRemove={onRemove}
+        removeLabel={t('playlists.removeFromPlaylist')}
+      />
     </div>
   );
 }

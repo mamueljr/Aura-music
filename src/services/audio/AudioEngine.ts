@@ -526,7 +526,14 @@ class AudioEngine {
   // ── Session restore ─────────────────────────────────────────
 
   /** Restores queue/index/position without touching the audio files yet. */
-  async restore(queue: string[], originalQueue: string[], index: number, position: number, shuffle: boolean, repeat: RepeatMode) {
+  async restore(
+    queue: string[],
+    originalQueue: string[],
+    index: number,
+    position: number,
+    shuffle: boolean,
+    repeat: RepeatMode,
+  ) {
     if (queue.length === 0 || index < 0 || index >= queue.length) return;
     const track = await db.tracks.get(queue[index]);
     if (!track) return;
