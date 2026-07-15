@@ -12,6 +12,7 @@ const FavoritesPage = lazy(() => import('@/features/favorites/FavoritesPage'));
 const PlaylistsPage = lazy(() => import('@/features/playlists/PlaylistsPage'));
 const PlaylistDetailPage = lazy(() => import('@/features/playlists/PlaylistDetailPage'));
 const SearchPage = lazy(() => import('@/features/search/SearchPage'));
+const StatsPage = lazy(() => import('@/features/stats/StatsPage'));
 const SettingsPage = lazy(() => import('@/features/settings/SettingsPage'));
 const AboutPage = lazy(() => import('@/features/about/AboutPage'));
 
@@ -104,6 +105,14 @@ export const router = createBrowserRouter(
           element: (
             <Page>
               <SearchPage />
+            </Page>
+          ),
+        },
+        {
+          path: 'stats',
+          element: (
+            <Page>
+              <StatsPage />
             </Page>
           ),
         },

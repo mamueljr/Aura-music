@@ -5,6 +5,7 @@ import type {
   ArtistEntry,
   CoverArt,
   GenreEntry,
+  KeyValueEntry,
   LibraryFolder,
   PersistedPlaybackState,
   Playlist,
@@ -24,6 +25,7 @@ export class AuraDatabase extends Dexie {
   artists!: Table<ArtistEntry, string>;
   genres!: Table<GenreEntry, string>;
   playbackState!: Table<PersistedPlaybackState, string>;
+  settings!: Table<KeyValueEntry, string>;
 
   constructor() {
     super('aura-music');
@@ -37,6 +39,10 @@ export class AuraDatabase extends Dexie {
       artists: 'id, name',
       genres: 'id, name',
       playbackState: 'id',
+    });
+    // v2: generic key-value table (negative cache for online cover lookups…)
+    this.version(2).stores({
+      settings: 'key',
     });
   }
 }

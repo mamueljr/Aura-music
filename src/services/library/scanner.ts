@@ -9,7 +9,9 @@ import {
   verifyPermission,
   type DiscoveredFile,
 } from '@/infrastructure/fs/fileSystem';
+import { deleteFolderFromOpfs } from '@/infrastructure/fs/opfs';
 import { MetadataWorkerPool } from '@/infrastructure/workers/metadataPool';
+import { fetchMissingCovers } from '@/services/artwork/onlineCovers';
 import { hash53 } from '@/lib/utils';
 import { useUiStore } from '@/stores/uiStore';
 
@@ -104,6 +106,7 @@ export async function removeFolder(folderId: number): Promise<void> {
     await db.tracks.where('folderId').equals(folderId).delete();
     await db.folders.delete(folderId);
   });
+  await deleteFolderFromOpfs(folderId);
   await pruneOrphanCovers();
   await rebuildAggregates();
 }
@@ -190,6 +193,8 @@ async function runScan(folderId: number, discovered: DiscoveredFile[]): Promise<
             playCount: prev?.playCount ?? 0,
             lastPlayedAt: prev?.lastPlayedAt,
             addedAt: prev?.addedAt ?? Date.now(),
+            // A changed file invalidates its OPFS copy; unchanged keeps it.
+            opfs: prev && prev.size === d.size && prev.lastModified === d.lastModified ? prev.opfs : 0,
           });
           if (prev) updated += 1;
           else added += 1;
@@ -222,11 +227,21 @@ async function runScan(folderId: number, discovered: DiscoveredFile[]): Promise<
         await db.covers.bulkPut([...newCovers.entries()].map(([id, blob]) => ({ id, blob })));
       }
       const trackCount = await db.tracks.where('folderId').equals(folderId).count();
-      await db.folders.update(folderId, { lastScanAt: Date.now(), trackCount });
+      const notInApp = await db.tracks
+        .where('folderId')
+        .equals(folderId)
+        .filter((t) => !t.opfs)
+        .count();
+      await db.folders.update(folderId, {
+        lastScanAt: Date.now(),
+        trackCount,
+        imported: trackCount > 0 && notInApp === 0,
+      });
     });
 
     await pruneOrphanCovers();
     await rebuildAggregates();
+    void fetchMissingCovers();
 
     setScan({ phase: 'done', added, updated, removed: removedIds.length });
     setTimeout(() => {

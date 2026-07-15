@@ -1,6 +1,6 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { motion } from 'framer-motion';
-import { Clock, Flame, Music2, Sparkles } from 'lucide-react';
+import { BarChart3, Clock, Flame, Music2, Sparkles } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
@@ -54,15 +54,26 @@ export default function HomePage() {
         <div className="absolute -top-24 right-1/4 size-72 rounded-full bg-aura-2/10 blur-[100px]" />
       </div>
 
-      <div className="relative px-4 pt-6 md:px-8 md:pt-10">
-        <motion.h1
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-2xl font-extrabold tracking-tight md:text-3xl"
-        >
-          {greeting}
-        </motion.h1>
-        <p className="mt-1 text-sm text-muted-foreground">{t('app.tagline')}</p>
+      <div className="relative flex items-start justify-between gap-3 px-4 pt-6 md:px-8 md:pt-10">
+        <div>
+          <motion.h1
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-2xl font-extrabold tracking-tight md:text-3xl"
+          >
+            {greeting}
+          </motion.h1>
+          <p className="mt-1 text-sm text-muted-foreground">{t('app.tagline')}</p>
+        </div>
+        {!empty ? (
+          <Link
+            to="/stats"
+            aria-label={t('nav.stats')}
+            className="mt-1 flex size-10 shrink-0 items-center justify-center rounded-full border bg-card/60 text-aura-1 transition-colors hover:bg-accent md:hidden"
+          >
+            <BarChart3 className="size-5" />
+          </Link>
+        ) : null}
       </div>
 
       <ScanProgressBanner />

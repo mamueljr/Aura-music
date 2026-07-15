@@ -1,6 +1,7 @@
 import { AUDIO_EXTENSIONS } from '@/core/constants';
 import type { LibraryFolder, Track } from '@/core/types';
 import { db } from '@/infrastructure/db/db';
+import { getTrackFromOpfs } from '@/infrastructure/fs/opfs';
 
 export interface DiscoveredFile {
   /** Path relative to the folder root, using `/` separators */
@@ -93,6 +94,12 @@ export function cacheFallbackFile(folderId: number, path: string, file: File) {
  * Throws if the folder handle is gone or permission was revoked.
  */
 export async function getTrackFile(track: Track): Promise<File> {
+  // App-private copy first: needs no permissions, works on every platform.
+  if (track.opfs) {
+    const opfsFile = await getTrackFromOpfs(track.folderId, track.path);
+    if (opfsFile) return opfsFile;
+  }
+
   const cached = fallbackFiles.get(`${track.folderId}:${track.path}`);
   if (cached) return cached;
 

@@ -3,6 +3,7 @@ import { useEffect, type ReactNode } from 'react';
 
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { setAppLanguage } from '@/i18n';
+import { fetchMissingCovers } from '@/services/artwork/onlineCovers';
 import { useSettingsStore } from '@/stores/settingsStore';
 
 const queryClient = new QueryClient({
@@ -54,6 +55,19 @@ function StoragePersistence() {
   return null;
 }
 
+/** Background pass for albums still missing artwork (throttled, cached). */
+function OnlineCoversSync() {
+  const onlineCovers = useSettingsStore((s) => s.onlineCovers);
+
+  useEffect(() => {
+    if (!onlineCovers) return;
+    const timer = window.setTimeout(() => void fetchMissingCovers(), 4000);
+    return () => window.clearTimeout(timer);
+  }, [onlineCovers]);
+
+  return null;
+}
+
 export function AppProviders({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
@@ -61,6 +75,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
         <ThemeSync />
         <LanguageSync />
         <StoragePersistence />
+        <OnlineCoversSync />
         {children}
       </TooltipProvider>
     </QueryClientProvider>

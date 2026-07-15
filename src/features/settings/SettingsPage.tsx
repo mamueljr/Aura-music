@@ -1,5 +1,14 @@
 import { useLiveQuery } from 'dexie-react-hooks';
-import { FolderOpen, Monitor, Moon, RefreshCw, Sun, Trash2 } from 'lucide-react';
+import {
+  BadgeCheck,
+  FolderOpen,
+  HardDriveDownload,
+  Monitor,
+  Moon,
+  RefreshCw,
+  Sun,
+  Trash2,
+} from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -19,9 +28,11 @@ import { CREATOR_NAME, CREATOR_URL, MAX_CROSSFADE_SECONDS } from '@/core/constan
 import { EqualizerPanel } from '@/features/player/components/EqualizerPanel';
 import { useFolders } from '@/hooks/useLibrary';
 import { db } from '@/infrastructure/db/db';
-import { supportsFsAccess } from '@/infrastructure/fs/fileSystem';
+import { supportsFsAccess, verifyPermission } from '@/infrastructure/fs/fileSystem';
 import { cn } from '@/lib/utils';
+import { fetchMissingCovers } from '@/services/artwork/onlineCovers';
 import { player } from '@/services/audio/AudioEngine';
+import { importFolderToApp } from '@/services/library/importer';
 import { removeFolder, scanFolder } from '@/services/library/scanner';
 import { usePlayerStore } from '@/stores/playerStore';
 import { useSettingsStore, type LanguageSetting, type ThemeSetting } from '@/stores/settingsStore';
@@ -226,7 +237,27 @@ function LibrarySection() {
   const { t } = useTranslation();
   const folders = useFolders();
   const [pendingRemove, setPendingRemove] = useState<number | null>(null);
+  const [importing, setImporting] = useState<Record<number, { done: number; total: number }>>({});
   const pendingFolder = (folders ?? []).find((f) => f.id === pendingRemove);
+
+  const importFolder = async (folderId: number) => {
+    const folder = (folders ?? []).find((f) => f.id === folderId);
+    if (folder?.mode === 'fs-access' && folder.handle) {
+      const granted = await verifyPermission(folder.handle);
+      if (!granted) return;
+    }
+    try {
+      await importFolderToApp(folderId, (p) =>
+        setImporting((s) => ({ ...s, [folderId]: { done: p.done + p.failed, total: p.total } })),
+      );
+    } finally {
+      setImporting((s) => {
+        const next = { ...s };
+        delete next[folderId];
+        return next;
+      });
+    }
+  };
 
   return (
     <Section title={t('settings.librarySection')}>
@@ -240,6 +271,8 @@ function LibrarySection() {
         </p>
       ) : null}
 
+      <OnlineCoversRow />
+
       <div className="space-y-2">
         {(folders ?? []).map((folder) => (
           <div
@@ -250,9 +283,32 @@ function LibrarySection() {
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-medium">{folder.name}</p>
               <p className="text-xs text-muted-foreground">
-                {t('common.songs', { count: folder.trackCount ?? 0 })}
+                {importing[folder.id!]
+                  ? t('library.importing', {
+                      done: importing[folder.id!].done,
+                      total: importing[folder.id!].total,
+                    })
+                  : t('common.songs', { count: folder.trackCount ?? 0 })}
               </p>
             </div>
+            {folder.imported ? (
+              <span className="flex items-center gap-1 rounded-full bg-accent px-2.5 py-1 text-[11px] font-medium text-aura-1">
+                <BadgeCheck className="size-3.5" /> {t('library.importedBadge')}
+              </span>
+            ) : (
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                aria-label={t('library.importToApp')}
+                title={t('library.importHint')}
+                disabled={!!importing[folder.id!]}
+                onClick={() => void importFolder(folder.id!)}
+              >
+                <HardDriveDownload
+                  className={cn(importing[folder.id!] && 'animate-pulse text-aura-1')}
+                />
+              </Button>
+            )}
             {folder.mode === 'fs-access' ? (
               <Button
                 variant="ghost"
@@ -303,6 +359,25 @@ function LibrarySection() {
         </DialogContent>
       </Dialog>
     </Section>
+  );
+}
+
+function OnlineCoversRow() {
+  const { t } = useTranslation();
+  const onlineCovers = useSettingsStore((s) => s.onlineCovers);
+  const setOnlineCovers = useSettingsStore((s) => s.setOnlineCovers);
+
+  return (
+    <Row label={t('settings.onlineCovers')} hint={t('settings.onlineCoversHint')}>
+      <Switch
+        checked={onlineCovers}
+        onCheckedChange={(checked) => {
+          setOnlineCovers(checked);
+          if (checked) void fetchMissingCovers();
+        }}
+        aria-label={t('settings.onlineCovers')}
+      />
+    </Row>
   );
 }
 

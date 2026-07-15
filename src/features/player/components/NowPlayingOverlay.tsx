@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
+import { useState } from 'react';
 import {
   ChevronDown,
   Disc3,
@@ -44,6 +45,7 @@ import { Visualizer } from './Visualizer';
 
 export function NowPlayingOverlay() {
   const { t } = useTranslation();
+  const [showLyrics, setShowLyrics] = useState(false);
   const open = useUiStore((s) => s.nowPlayingOpen);
   const setOpen = useUiStore((s) => s.setNowPlayingOpen);
   const setQueueOpen = useUiStore((s) => s.setQueueOpen);
@@ -95,9 +97,13 @@ export function NowPlayingOverlay() {
             </Button>
           </div>
 
-          {/* Center stage: artwork or visualizer */}
+          {/* Center stage: lyrics, artwork or visualizer */}
           <div className="relative flex min-h-0 flex-1 items-center justify-center px-6 py-4">
-            {visualizer === 'off' ? (
+            {showLyrics ? (
+              <div className="h-full w-full max-w-2xl">
+                <LyricsPanel track={track} stage />
+              </div>
+            ) : visualizer === 'off' ? (
               <motion.div layoutId="now-playing-art" className="w-full max-w-[min(42vh,26rem)]">
                 <Artwork
                   coverId={track.coverId}
@@ -134,7 +140,9 @@ export function NowPlayingOverlay() {
           </div>
 
           {/* Visualizer mode switcher */}
-          <div className="relative flex justify-center gap-1.5 pb-2">
+          <div
+            className={cn('relative flex justify-center gap-1.5 pb-2', showLyrics && 'invisible')}
+          >
             {(
               [
                 ['off', Disc3],
@@ -262,19 +270,16 @@ export function NowPlayingOverlay() {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button variant="ghost" size="icon-sm" aria-label={t('player.lyrics')}>
-                    <MicVocal />
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-lg">
-                  <DialogHeader>
-                    <DialogTitle>{t('player.lyrics')}</DialogTitle>
-                  </DialogHeader>
-                  <LyricsPanel track={track} />
-                </DialogContent>
-              </Dialog>
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                aria-label={t('player.lyrics')}
+                aria-pressed={showLyrics}
+                onClick={() => setShowLyrics((v) => !v)}
+                className={cn(showLyrics && 'bg-accent text-aura-1')}
+              >
+                <MicVocal />
+              </Button>
             </div>
           </div>
         </motion.div>

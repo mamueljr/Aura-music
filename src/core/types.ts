@@ -31,6 +31,8 @@ export interface Track {
   playCount: number;
   lastPlayedAt?: number;
   addedAt: number;
+  /** 1 when a copy lives in the app's private storage (OPFS) */
+  opfs?: 0 | 1;
 }
 
 export interface AlbumEntry {
@@ -87,6 +89,13 @@ export interface LibraryFolder {
   addedAt: number;
   lastScanAt?: number;
   trackCount?: number;
+  /** True when every track of this folder has an OPFS copy */
+  imported?: boolean;
+}
+
+export interface KeyValueEntry {
+  key: string;
+  value: unknown;
 }
 
 export type RepeatMode = 'off' | 'all' | 'one';

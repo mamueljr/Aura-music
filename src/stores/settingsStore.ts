@@ -22,6 +22,8 @@ interface SettingsState {
   eqGains: number[];
 
   visualizer: VisualizerMode;
+  /** Fetch cover art from the internet for albums with no embedded art */
+  onlineCovers: boolean;
 
   setTheme: (theme: ThemeSetting) => void;
   setLanguage: (language: LanguageSetting) => void;
@@ -34,6 +36,7 @@ interface SettingsState {
   setEqPreset: (preset: string) => void;
   setEqGain: (band: number, gain: number) => void;
   setVisualizer: (mode: VisualizerMode) => void;
+  setOnlineCovers: (enabled: boolean) => void;
 }
 
 export const useSettingsStore = create<SettingsState>()(
@@ -53,6 +56,7 @@ export const useSettingsStore = create<SettingsState>()(
       eqGains: [...EQ_PRESETS.flat],
 
       visualizer: 'bars',
+      onlineCovers: true,
 
       setTheme: (theme) => set({ theme }),
       setLanguage: (language) => set({ language }),
@@ -74,6 +78,7 @@ export const useSettingsStore = create<SettingsState>()(
           return { eqGains, eqPreset: 'custom' };
         }),
       setVisualizer: (visualizer) => set({ visualizer }),
+      setOnlineCovers: (onlineCovers) => set({ onlineCovers }),
     }),
     { name: 'aura.settings' },
   ),

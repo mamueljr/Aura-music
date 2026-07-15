@@ -1,4 +1,4 @@
-import { Heart, Home, Info, Library, ListMusic, Search, Settings } from 'lucide-react';
+import { BarChart3, Heart, Home, Info, Library, ListMusic, Search, Settings } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
 
@@ -56,6 +56,7 @@ export function Sidebar() {
         <NavItem to="/search" icon={Search} label={t('nav.search')} />
         <NavItem to="/favorites" icon={Heart} label={t('nav.favorites')} />
         <NavItem to="/playlists" icon={ListMusic} label={t('nav.playlists')} />
+        <NavItem to="/stats" icon={BarChart3} label={t('nav.stats')} />
       </nav>
       <div className="flex flex-col gap-1 border-t pt-3">
         <NavItem to="/settings" icon={Settings} label={t('nav.settings')} />
