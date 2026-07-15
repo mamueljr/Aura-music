@@ -1,8 +1,8 @@
-import { Github, ShieldCheck } from 'lucide-react';
+import { Github, ShieldCheck, Sparkles } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { PageHeader } from '@/components/PageHeader';
-import { APP_REPO_URL, APP_VERSION } from '@/core/constants';
+import { APP_REPO_URL, APP_VERSION, CREATOR_NAME, CREATOR_URL } from '@/core/constants';
 
 const TECH = [
   'React',
@@ -41,14 +41,24 @@ export default function AboutPage() {
             </p>
           </div>
           <p className="max-w-md text-sm text-muted-foreground">{t('about.body')}</p>
-          <a
-            href={APP_REPO_URL}
-            target="_blank"
-            rel="noreferrer"
-            className="mt-1 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors hover:bg-accent"
-          >
-            <Github className="size-4" /> {t('about.sourceCode')}
-          </a>
+          <div className="mt-1 flex flex-wrap items-center justify-center gap-2">
+            <a
+              href={APP_REPO_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors hover:bg-accent"
+            >
+              <Github className="size-4" /> {t('about.sourceCode')}
+            </a>
+            <a
+              href={CREATOR_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 rounded-full aura-gradient px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-aura-1/25 transition-all hover:brightness-110"
+            >
+              <Sparkles className="size-4" /> {t('about.createdBy')} {CREATOR_NAME}
+            </a>
+          </div>
         </div>
 
         <section className="rounded-2xl border bg-card/60 p-5">

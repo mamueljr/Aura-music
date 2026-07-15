@@ -2,6 +2,7 @@ import { Heart, Home, Info, Library, ListMusic, Search, Settings } from 'lucide-
 import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
 
+import { CREATOR_NAME, CREATOR_URL } from '@/core/constants';
 import { cn } from '@/lib/utils';
 
 function AuraLogo() {
@@ -59,6 +60,14 @@ export function Sidebar() {
       <div className="flex flex-col gap-1 border-t pt-3">
         <NavItem to="/settings" icon={Settings} label={t('nav.settings')} />
         <NavItem to="/about" icon={Info} label={t('nav.about')} />
+        <a
+          href={CREATOR_URL}
+          target="_blank"
+          rel="noreferrer"
+          className="px-3 pb-1 pt-2 text-[11px] text-muted-foreground/70 transition-colors hover:text-foreground"
+        >
+          {t('about.createdBy')} <span className="font-semibold aura-text">{CREATOR_NAME}</span>
+        </a>
       </div>
     </aside>
   );

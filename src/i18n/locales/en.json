@@ -202,7 +202,8 @@
     "privacy": "Privacy",
     "privacyBody": "Aura Music does not collect any data. Your music, playlists and settings are stored locally in your browser.",
     "tech": "Built with",
-    "sourceCode": "Source code"
+    "sourceCode": "Source code",
+    "createdBy": "Created by"
   },
   "install": {
     "title": "Install Aura Music",

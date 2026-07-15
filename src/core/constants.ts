@@ -1,6 +1,8 @@
 export const APP_NAME = 'Aura Music';
 export const APP_VERSION = '0.1.0';
 export const APP_REPO_URL = 'https://github.com/mamueljr/Aura-music';
+export const CREATOR_NAME = 'ESISCOM';
+export const CREATOR_URL = 'https://mamueljr.github.io/esiscom/';
 
 export const AUDIO_EXTENSIONS = ['mp3', 'm4a', 'aac', 'flac', 'ogg', 'opus', 'wav', 'webm'];
 

@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/dialog';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
-import { MAX_CROSSFADE_SECONDS } from '@/core/constants';
+import { CREATOR_NAME, CREATOR_URL, MAX_CROSSFADE_SECONDS } from '@/core/constants';
 import { EqualizerPanel } from '@/features/player/components/EqualizerPanel';
 import { useFolders } from '@/hooks/useLibrary';
 import { db } from '@/infrastructure/db/db';
@@ -44,6 +44,14 @@ export default function SettingsPage() {
         <LibrarySection />
         <DataSection />
         <ShortcutsSection />
+        <a
+          href={CREATOR_URL}
+          target="_blank"
+          rel="noreferrer"
+          className="mx-auto block w-full max-w-3xl pb-4 text-center text-xs text-muted-foreground/70 transition-colors hover:text-foreground"
+        >
+          {t('about.createdBy')} <span className="font-semibold aura-text">{CREATOR_NAME}</span>
+        </a>
       </div>
     </div>
   );

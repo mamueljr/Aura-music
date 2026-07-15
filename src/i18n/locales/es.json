@@ -202,7 +202,8 @@
     "privacy": "Privacidad",
     "privacyBody": "Aura Music no recolecta ningún dato. Tu música, playlists y configuración se guardan localmente en tu navegador.",
     "tech": "Construido con",
-    "sourceCode": "Código fuente"
+    "sourceCode": "Código fuente",
+    "createdBy": "Creado por"
   },
   "install": {
     "title": "Instalar Aura Music",
