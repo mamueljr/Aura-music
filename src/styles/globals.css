@@ -1,0 +1,159 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* ── Aura light theme ─────────────────────────────── */
+  --background: #f6f5fa;
+  --foreground: #17151f;
+  --card: #ffffff;
+  --card-foreground: #17151f;
+  --popover: #ffffff;
+  --popover-foreground: #17151f;
+  --primary: #7c3aed;
+  --primary-foreground: #ffffff;
+  --secondary: #ece9f6;
+  --secondary-foreground: #17151f;
+  --muted: #eceaf3;
+  --muted-foreground: #6b6880;
+  --accent: #e6e2f5;
+  --accent-foreground: #17151f;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --border: #e2dfec;
+  --input: #e2dfec;
+  --ring: #8b5cf6;
+
+  --aura-1: #8b5cf6;
+  --aura-2: #22d3ee;
+  --aura-3: #f472b6;
+
+  --surface-glass: rgba(255, 255, 255, 0.72);
+  --surface-glass-border: rgba(23, 21, 31, 0.08);
+
+  --radius: 0.75rem;
+}
+
+.dark {
+  /* ── Aura dark theme ──────────────────────────────── */
+  --background: #0b0a12;
+  --foreground: #eceaf4;
+  --card: #14121e;
+  --card-foreground: #eceaf4;
+  --popover: #171525;
+  --popover-foreground: #eceaf4;
+  --primary: #a78bfa;
+  --primary-foreground: #14101f;
+  --secondary: #201d30;
+  --secondary-foreground: #eceaf4;
+  --muted: #1d1a2b;
+  --muted-foreground: #9a95b8;
+  --accent: #252138;
+  --accent-foreground: #eceaf4;
+  --destructive: #f87171;
+  --destructive-foreground: #1c0b0b;
+  --border: #262336;
+  --input: #2b2740;
+  --ring: #a78bfa;
+
+  --surface-glass: rgba(20, 18, 30, 0.66);
+  --surface-glass-border: rgba(236, 234, 244, 0.08);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-aura-1: var(--aura-1);
+  --color-aura-2: var(--aura-2);
+  --color-aura-3: var(--aura-3);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --font-sans:
+    'Inter var', Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+
+  --animate-aura-spin: aura-spin 14s linear infinite;
+
+  @keyframes aura-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    overscroll-behavior-y: none;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--aura-1) 35%, transparent);
+  }
+
+  /* Subtle themed scrollbars */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in oklab, var(--muted-foreground) 35%, transparent) transparent;
+  }
+}
+
+@utility glass {
+  background: var(--surface-glass);
+  border-color: var(--surface-glass-border);
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+}
+
+@utility aura-gradient {
+  background-image: linear-gradient(135deg, var(--aura-1), var(--aura-2));
+}
+
+@utility aura-text {
+  background-image: linear-gradient(90deg, var(--aura-1), var(--aura-2));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
