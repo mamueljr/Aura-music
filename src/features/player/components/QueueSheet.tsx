@@ -180,7 +180,7 @@ function QueueRow({
           variant="ghost"
           size="icon-sm"
           aria-label={t('player.removeFromQueue')}
-          className="opacity-0 focus-visible:opacity-100 group-hover:opacity-100"
+          className="focus-visible:opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100"
           onClick={() => player.removeFromQueue(index)}
         >
           <X />

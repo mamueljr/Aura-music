@@ -168,7 +168,7 @@ export const TrackRow = memo(function TrackRow({
           void toggleFavorite(track.id);
         }}
         className={cn(
-          'rounded-full p-1.5 text-muted-foreground opacity-0 transition-all hover:text-foreground focus-visible:opacity-100 group-hover:opacity-100',
+          'rounded-full p-1.5 text-muted-foreground transition-all hover:text-foreground focus-visible:opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100',
           track.favorite && 'text-aura-3 opacity-100',
         )}
       >
@@ -204,7 +204,7 @@ export function TrackMenu({
           variant="ghost"
           size="icon-sm"
           aria-label="More"
-          className="opacity-0 focus-visible:opacity-100 group-hover:opacity-100 data-[state=open]:opacity-100"
+          className="focus-visible:opacity-100 data-[state=open]:opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100"
           onClick={(e) => e.stopPropagation()}
         >
           <MoreHorizontal />

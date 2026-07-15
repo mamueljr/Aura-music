@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom';
 
 import { BottomNav } from '@/app/layout/BottomNav';
 import { Sidebar } from '@/app/layout/Sidebar';
+import { PermissionBanner } from '@/features/library/components/PermissionBanner';
 import { AddToPlaylistDialog } from '@/features/playlists/components/AddToPlaylistDialog';
 import { MiniPlayer } from '@/features/player/components/MiniPlayer';
 import { NowPlayingOverlay } from '@/features/player/components/NowPlayingOverlay';
@@ -20,6 +21,7 @@ export function AppLayout() {
       <div className="flex min-h-0 flex-1">
         <Sidebar />
         <main className="relative min-h-0 flex-1 overflow-y-auto" id="main-content">
+          <PermissionBanner />
           <Outlet />
           {/* Spacer so content never hides behind the mini player */}
           <div className="h-4" />

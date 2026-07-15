@@ -45,12 +45,22 @@ function LanguageSync() {
   return null;
 }
 
+/** Ask the browser to treat our storage as persistent (bucket survives
+ *  storage pressure; granted silently for installed PWAs). */
+function StoragePersistence() {
+  useEffect(() => {
+    void navigator.storage?.persist?.();
+  }, []);
+  return null;
+}
+
 export function AppProviders({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider delayDuration={400}>
         <ThemeSync />
         <LanguageSync />
+        <StoragePersistence />
         {children}
       </TooltipProvider>
     </QueryClientProvider>
