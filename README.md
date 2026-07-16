@@ -29,7 +29,8 @@ Aura Music indexes the music folders on **your** device, stores the library in I
 - 📁 Pick local folders with the **File System Access API** (persistent across sessions on Chromium; graceful `webkitdirectory` fallback elsewhere)
 - 🏷️ Full **ID3 metadata**: title, artist, album, genre, year, track №, duration and embedded cover art — parsed in a **Web Worker pool**, UI never blocks
 - 🔄 **Incremental rescans** detect new, changed and deleted songs
-- 🎨 Covers extracted from the files, with elegant generated artwork as fallback
+- 🎨 Covers extracted from the files; albums without embedded art get theirs fetched online (iTunes Search → Cover Art Archive, opt-out in Settings) with a generated fallback
+- 📦 Optional **"Import into app"** (OPFS): copies your music into the app's private storage so playback never needs folder permissions — at the cost of the extra space
 - ⚡ Virtualized lists ready for **20 000+ song** libraries
 
 **Player**
@@ -39,12 +40,14 @@ Aura Music indexes the music folders on **your** device, stores the library in I
 - 🎚️ **10-band equalizer** with presets · 📈 volume normalization (dynamics compressor)
 - 🚀 Playback speed (0.5×–2×) · 🌙 sleep timer (minutes or end-of-track)
 - 📊 Two live visualizers (spectrum bars & circular "aura") fed by an `AnalyserNode`
+- 🎤 **Synced lyrics** (LRCLIB): full-screen karaoke view, active line highlight, tap a line to seek
 - 🔒 **Media Session API**: lock-screen / headset / media-key controls
 - 💾 Queue and position survive restarts
 
 **App**
 
-- 🖥️ Screens: Home, Library (Songs / Artists / Albums / Genres), details, Favorites, Playlists, Search, Now Playing, Settings, About
+- 🖥️ Screens: Home, Library (Songs / Artists / Albums / Genres), details, Favorites, Playlists, Search, Stats, Now Playing, Settings, About
+- 📈 **Listening stats**: total plays and time, top songs / artists / albums / genres
 - 🔍 Instant search across songs, artists, albums and genres
 - 📋 Playlists: create, rename, reorder (drag & drop), duplicate, export **M3U / JSON**
 - 🌗 Light & dark themes, subtle glassmorphism, Framer Motion transitions
@@ -81,7 +84,9 @@ npm run dev        # http://localhost:5173/Aura-music/
 | `npm run lint`      | ESLint                                      |
 | `npm run typecheck` | `tsc --noEmit`                              |
 
-**Deploy:** every push to `main` builds and publishes to GitHub Pages via [`deploy.yml`](.github/workflows/deploy.yml). One-time setup: repo **Settings → Pages → Source: GitHub Actions**.
+**Deploy (automatic):** every push to `main` builds and publishes to GitHub Pages via [`deploy.yml`](.github/workflows/deploy.yml). One-time setup: repo **Settings → Pages → Source: GitHub Actions**.
+
+**Deploy (manual fallback):** build locally and push `dist/` to a `gh-pages` branch, then set **Settings → Pages → Source: Deploy from a branch → `gh-pages`**. Useful when Actions are unavailable.
 
 ## 🏗️ Architecture at a glance
 
@@ -112,11 +117,13 @@ Key decisions (full detail in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)):
 | Full app, playback, PWA         | ✅            | ✅      | ✅     |
 | Persistent folder access        | ✅            | ⚠️ fallback | ⚠️ fallback |
 
-On Firefox / Safari, folders are imported per-session with `<input webkitdirectory>` — the indexed library persists, but files must be re-picked after a restart (the File System Access API is Chromium-only for now).
+On Firefox / Safari, folders are imported per-session with `<input webkitdirectory>` — the indexed library persists, but files must be re-picked after a restart (the File System Access API is Chromium-only for now). **"Import into app" removes this limitation everywhere**: once copied into OPFS, music plays on any browser with no permissions and no re-picking.
+
+> 📱 **Android tip:** if the installed app keeps asking for folder permission while the Chrome tab doesn't, uninstall and reinstall the PWA — stale WebAPKs don't inherit persistent permissions correctly.
 
 ## 🔒 Privacy
 
-Aura Music collects **nothing**. There is no backend, no analytics, no accounts. Your music, playlists and settings live in your browser's local storage. The only optional network call is fetching lyrics from LRCLIB when you open the lyrics panel.
+Aura Music collects **nothing**. There is no backend, no analytics, no accounts. Your music, playlists and settings live in your browser's local storage. The only optional network calls are lyrics lookups (LRCLIB) and cover-art lookups (iTunes Search / Cover Art Archive) — both can be avoided (covers via the Settings toggle, lyrics by not opening the panel).
 
 ## 📄 License
 
@@ -127,6 +134,6 @@ Aura Music collects **nothing**. There is no backend, no analytics, no accounts.
 <details>
 <summary><b>🇪🇸 Resumen en español</b></summary>
 
-**Aura Music** es un reproductor de música offline-first construido como PWA moderna: indexa tus carpetas locales (File System Access API), guarda la biblioteca en IndexedDB y reproduce con un motor Web Audio (ecualizador de 10 bandas, crossfade, normalización, visualizadores). Incluye biblioteca con vistas virtualizadas para más de 20 000 canciones, playlists con arrastrar y soltar, favoritos, búsqueda instantánea, temas claro/oscuro, interfaz bilingüe (ES/EN), atajos de teclado y funcionamiento 100 % sin conexión. Se instala desde Chrome en Android, Windows y Linux, y se despliega automáticamente en GitHub Pages con cada push a `main`.
+**Aura Music** es un reproductor de música offline-first construido como PWA moderna: indexa tus carpetas locales (File System Access API), guarda la biblioteca en IndexedDB y reproduce con un motor Web Audio (ecualizador de 10 bandas, crossfade, normalización, visualizadores). Incluye biblioteca con vistas virtualizadas para más de 20 000 canciones, playlists con arrastrar y soltar, favoritos, búsqueda instantánea, letras sincronizadas (LRCLIB), portadas automáticas desde internet, estadísticas de escucha, importación opcional al almacenamiento de la app (OPFS, reproduce sin permisos), temas claro/oscuro, interfaz bilingüe (ES/EN), atajos de teclado y funcionamiento 100 % sin conexión. Se instala desde Chrome en Android, Windows y Linux, y se despliega en GitHub Pages.
 
 </details>

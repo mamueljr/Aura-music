@@ -23,6 +23,7 @@ flowchart TB
     subgraph Infra["infrastructure/"]
         Dexie["Dexie / IndexedDB"]
         FS["File System Access + fallback"]
+        OPFS["OPFS (imported copies)"]
         Worker["metadata.worker (music-metadata)"]
     end
     Core["core/ — Track, Album, Playlist, constants"]
@@ -62,6 +63,11 @@ sequenceDiagram
 - **Track identity** is a stable 53-bit hash of `folderId + relative path` — rescans update in place, and favorites/play-counts survive metadata changes.
 - **Cover dedup**: embedded art is hashed by content, so a 12-track album stores its cover once.
 - **Incremental**: unchanged files (same path, size, mtime) are never re-parsed.
+- **Online covers**: after each scan, albums still missing artwork get a throttled background lookup (iTunes Search → MusicBrainz/Cover Art Archive) with a Dexie negative cache (`services/artwork/onlineCovers.ts`).
+
+## File resolution & the OPFS import
+
+`getTrackFile` resolves audio in privilege order: **OPFS copy → session cache (fallback mode) → folder handle** (which may require a permission grant). The optional *Import into app* flow (`services/library/importer.ts`) copies a folder's files into the Origin Private File System at `/music/<folderId>/<path>`; imported folders play with zero permissions on every platform and are skipped by the permission banner. Rescans invalidate the copy only for files whose size/mtime changed.
 
 ## Audio graph
 
@@ -92,12 +98,13 @@ flowchart LR
 | `albums` / `artists` / `genres` | hash(name) | Materialized aggregates rebuilt after each scan |
 | `playlists`     | random hash    | Ordered `trackIds[]`                                         |
 | `playbackState` | `'current'`    | Queue, index, position, shuffle, repeat — restored on launch |
+| `settings` (v2) | string key     | Generic key-value store (negative cache for cover lookups)   |
 
 ## Extension points
 
-- **Lyrics** — `services/lyrics/types.ts` defines `LyricsProvider`; `services/lyrics/index.ts` holds an ordered registry. LRCLIB ships enabled; Musixmatch / lyrics.ovh are new files, not refactors.
+- **Lyrics** — `services/lyrics/types.ts` defines `LyricsProvider`; `services/lyrics/index.ts` holds an ordered registry. LRCLIB ships enabled (and powers the synced karaoke view in Now Playing); Musixmatch / lyrics.ovh are new files, not refactors.
 - **Cloud sync** — `services/sync/types.ts` defines `SyncProvider` (`push`/`pull` of playlists, favorites, settings, history). The default is a no-op; a Supabase or Express/VPS implementation swaps in via one export.
-- **Cover art from the internet** — `services/artwork` is the single place covers are resolved; an online source (e.g. MusicBrainz/CAA) would be added behind the same `getCoverUrl` call.
+- **Cover art providers** — `services/artwork/onlineCovers.ts` chains providers (iTunes → Cover Art Archive today); adding another source is one function in the chain.
 
 ## Performance
 

@@ -27,15 +27,16 @@ docs: add architecture diagrams
 | **M3 — Player** ✅ | Full playback engine + Now Playing | EQ, crossfade, visualizers, Media Session all functional |
 | **M4 — Collections** ✅ | Playlists, favorites, search | Drag-and-drop reorder, export, instant search |
 | **M5 — PWA & deploy** ✅ | Offline, installable, CI to Pages | Deep links load with the server off; Lighthouse installable |
-| **M6 — Polish** | v0.2 roadmap items | Synced lyrics view, online covers, playlist import |
+| **M6 — Polish** ✅ | v0.2 roadmap items | Synced lyrics view, online covers, OPFS import, stats |
+| **M6.5 — Polish II** | v0.2.x roadmap items | Playlist import, smart playlists, loudness scan |
 | **M7 — Sync** | v0.3 roadmap items | Supabase provider behind `SyncProvider` |
 
 ## Suggested issues (ready to open)
 
-**M6 — Polish**
+**M6.5 — Polish II**
 
-1. `feat(player): full-screen synced lyrics view` — render `LyricsResult.lines` with active-line tracking (data layer already returns timed lines).
-2. `feat(artwork): online cover fallback via Cover Art Archive` — extend `services/artwork` with an opt-in fetch when a track has no `coverId`.
+1. ~~`feat(player): full-screen synced lyrics view`~~ ✅ shipped in v0.2
+2. ~~`feat(artwork): online cover fallback`~~ ✅ shipped in v0.2 (iTunes + CAA)
 3. `feat(playlists): import M3U/JSON` — parse the formats produced by the exporter; match tracks by path, then by title+artist+duration.
 4. `feat(library): smart playlists` — persisted query definitions (recently added / most played / never played).
 5. `perf(audio): per-track loudness pre-scan` — compute gain with an `OfflineAudioContext` on first play, cache in `tracks`.
