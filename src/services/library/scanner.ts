@@ -79,6 +79,20 @@ export async function addFolderFromFileList(files: FileList): Promise<void> {
   await runScan(folderId, discovered);
 }
 
+/**
+ * Re-scans an existing fallback-mode folder from a fresh `<input webkitdirectory>`
+ * selection. Fallback folders have no persistent handle, so this is the only way
+ * to pick up new/changed/removed files for them — the browser must re-enumerate
+ * the whole tree, but scanning itself stays incremental via `runScan`'s diff.
+ */
+export async function reimportFallbackFolder(folderId: number, files: FileList): Promise<void> {
+  const { files: discovered } = discoverFromFileList(files);
+  for (const d of discovered) {
+    cacheFallbackFile(folderId, d.path, await d.getFile());
+  }
+  await runScan(folderId, discovered);
+}
+
 /** Rescans a stored folder (detects new, changed and removed songs). */
 export async function scanFolder(folderId: number): Promise<void> {
   const folder = await db.folders.get(folderId);

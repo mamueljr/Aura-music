@@ -41,29 +41,56 @@ export async function verifyPermission(handle: FileSystemDirectoryHandle): Promi
   }
 }
 
+/** Max concurrent `getFile()` stats in flight while walking a directory tree. */
+const DISCOVER_CONCURRENCY = 24;
+
 /** Recursively walks a directory handle yielding every audio file. */
 export async function discoverFromHandle(
   handle: FileSystemDirectoryHandle,
   basePath = '',
 ): Promise<DiscoveredFile[]> {
-  const out: DiscoveredFile[] = [];
+  const dirs: FileSystemDirectoryHandle[] = [];
+  const dirPaths: string[] = [];
+  const audioFiles: { path: string; fileHandle: FileSystemFileHandle }[] = [];
+
   for await (const entry of handle.values()) {
     const path = basePath ? `${basePath}/${entry.name}` : entry.name;
     if (entry.kind === 'directory') {
-      out.push(...(await discoverFromHandle(entry as FileSystemDirectoryHandle, path)));
+      dirs.push(entry as FileSystemDirectoryHandle);
+      dirPaths.push(path);
     } else if (isAudioFile(entry.name)) {
-      const fileHandle = entry as FileSystemFileHandle;
+      audioFiles.push({ path, fileHandle: entry as FileSystemFileHandle });
+    }
+  }
+
+  // Stat files in this directory with bounded concurrency instead of one at a
+  // time: `getFile()` is a round trip to the OS/content-provider layer, and on
+  // mobile that latency dominates scan time for large libraries.
+  const out: DiscoveredFile[] = new Array(audioFiles.length);
+  let cursor = 0;
+  const worker = async () => {
+    while (cursor < audioFiles.length) {
+      const i = cursor++;
+      const { path, fileHandle } = audioFiles[i];
       // Read size/mtime once up-front so incremental scans can diff cheaply.
       const f = await fileHandle.getFile();
-      out.push({
+      out[i] = {
         path,
         size: f.size,
         lastModified: f.lastModified,
         getFile: () => fileHandle.getFile(),
-      });
+      };
     }
-  }
-  return out;
+  };
+  await Promise.all(
+    Array.from({ length: Math.min(DISCOVER_CONCURRENCY, audioFiles.length) }, worker),
+  );
+
+  // Recurse into subdirectories concurrently too.
+  const nested = await Promise.all(
+    dirs.map((dir, i) => discoverFromHandle(dir, dirPaths[i])),
+  );
+  return out.concat(...nested);
 }
 
 /** Converts a `<input webkitdirectory>` FileList into discovered files. */

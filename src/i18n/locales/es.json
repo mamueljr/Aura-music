@@ -71,6 +71,8 @@
     "genres": "Géneros",
     "addFolder": "Agregar carpeta",
     "rescan": "Re-escanear",
+    "reimport": "Actualizar carpeta",
+    "reimportHint": "Vuelve a seleccionar esta misma carpeta para detectar canciones nuevas, modificadas o eliminadas.",
     "scanning": "Escaneando…",
     "discoveringFiles": "Buscando archivos…",
     "readingMetadata": "Leyendo metadatos {{processed}}/{{discovered}}",

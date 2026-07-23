@@ -71,6 +71,8 @@
     "genres": "Genres",
     "addFolder": "Add folder",
     "rescan": "Rescan",
+    "reimport": "Update folder",
+    "reimportHint": "Re-select this same folder to detect new, changed or removed songs.",
     "scanning": "Scanning…",
     "discoveringFiles": "Discovering files…",
     "readingMetadata": "Reading metadata {{processed}}/{{discovered}}",

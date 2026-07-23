@@ -9,7 +9,7 @@ import {
   Sun,
   Trash2,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { PageHeader } from '@/components/PageHeader';
@@ -33,7 +33,7 @@ import { cn } from '@/lib/utils';
 import { fetchMissingCovers } from '@/services/artwork/onlineCovers';
 import { player } from '@/services/audio/AudioEngine';
 import { importFolderToApp } from '@/services/library/importer';
-import { removeFolder, scanFolder } from '@/services/library/scanner';
+import { reimportFallbackFolder, removeFolder, scanFolder } from '@/services/library/scanner';
 import { usePlayerStore } from '@/stores/playerStore';
 import { useSettingsStore, type LanguageSetting, type ThemeSetting } from '@/stores/settingsStore';
 
@@ -314,11 +314,14 @@ function LibrarySection() {
                 variant="ghost"
                 size="icon-sm"
                 aria-label={t('library.rescan')}
+                title={t('library.rescan')}
                 onClick={() => void scanFolder(folder.id!)}
               >
                 <RefreshCw />
               </Button>
-            ) : null}
+            ) : (
+              <FallbackReimportButton folderId={folder.id!} />
+            )}
             <Button
               variant="ghost"
               size="icon-sm"
@@ -359,6 +362,49 @@ function LibrarySection() {
         </DialogContent>
       </Dialog>
     </Section>
+  );
+}
+
+/**
+ * Fallback-mode folders (no File System Access API) have no persistent handle,
+ * so the only way to pick up new/changed/removed songs is re-selecting the same
+ * folder through the OS picker again.
+ */
+function FallbackReimportButton({ folderId }: { folderId: number }) {
+  const { t } = useTranslation();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+
+  return (
+    <>
+      <Button
+        variant="ghost"
+        size="icon-sm"
+        aria-label={t('library.reimport')}
+        title={t('library.reimportHint')}
+        disabled={busy}
+        onClick={() => inputRef.current?.click()}
+      >
+        <RefreshCw className={cn(busy && 'animate-spin')} />
+      </Button>
+      <input
+        ref={inputRef}
+        type="file"
+        // @ts-expect-error non-standard attribute, needed for the fallback
+        webkitdirectory=""
+        multiple
+        hidden
+        onChange={(e) => {
+          if (e.target.files?.length) {
+            setBusy(true);
+            void reimportFallbackFolder(folderId, e.target.files).finally(() => {
+              setBusy(false);
+              e.target.value = '';
+            });
+          }
+        }}
+      />
+    </>
   );
 }
 
