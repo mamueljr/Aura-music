@@ -55,14 +55,17 @@ export default function SettingsPage() {
         <LibrarySection />
         <DataSection />
         <ShortcutsSection />
-        <a
-          href={CREATOR_URL}
-          target="_blank"
-          rel="noreferrer"
-          className="mx-auto block w-full max-w-3xl pb-4 text-center text-xs text-muted-foreground/70 transition-colors hover:text-foreground"
-        >
-          {t('about.createdBy')} <span className="font-semibold aura-text">{CREATOR_NAME}</span>
-        </a>
+        <div className="mx-auto w-full max-w-3xl pb-4 text-center">
+          <a
+            href={CREATOR_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="block text-xs text-muted-foreground/70 transition-colors hover:text-foreground"
+          >
+            {t('about.createdBy')} <span className="font-semibold aura-text">{CREATOR_NAME}</span>
+          </a>
+          <p className="mt-1 font-mono text-[10px] text-muted-foreground/50">v{__APP_VERSION__}</p>
+        </div>
       </div>
     </div>
   );
