@@ -281,6 +281,10 @@ class AudioEngine {
       loadCount: s.loadCount + 1,
     }));
 
+    // Folder scans no longer read duration up-front (too slow on mobile), so
+    // backfill it the first time a track plays, straight from the audio element.
+    if (!track.duration) this.backfillDuration(deck, track.id);
+
     if (options?.paused) {
       usePlayerStore.setState({ isPlaying: false });
       return;
@@ -294,6 +298,22 @@ class AudioEngine {
     } catch (error) {
       usePlayerStore.setState({ isPlaying: false });
       throw error;
+    }
+  }
+
+  /** Persist a track's real duration once the audio element reports it. */
+  private backfillDuration(deck: Deck, trackId: string) {
+    const save = () => {
+      const d = deck.audio.duration;
+      if (!Number.isFinite(d) || d <= 0) return;
+      const cur = usePlayerStore.getState().currentTrack;
+      if (cur?.id === trackId) usePlayerStore.setState({ duration: d });
+      void db.tracks.update(trackId, { duration: d });
+    };
+    if (Number.isFinite(deck.audio.duration) && deck.audio.duration > 0) {
+      save();
+    } else {
+      deck.audio.addEventListener('loadedmetadata', save, { once: true });
     }
   }
 

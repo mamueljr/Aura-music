@@ -18,7 +18,12 @@ export interface ParsedMetadata {
  * fallback so both code paths behave identically.
  */
 export async function parseAudioMetadata(file: Blob): Promise<ParsedMetadata> {
-  const parsed = await parseBlob(file, { duration: true });
+  // NOTE: `duration: true` is intentionally OFF. For MP3s without a VBR header
+  // it forces music-metadata to read the entire file and scan every frame,
+  // which on mobile turns a folder scan into minutes-long (effectively hung)
+  // work. We only read the tags at the start of the file here; the real
+  // duration is filled in cheaply from the <audio> element on first playback.
+  const parsed = await parseBlob(file);
   const { common, format } = parsed;
   const picture = common.picture?.[0];
 

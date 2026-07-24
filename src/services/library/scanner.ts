@@ -159,8 +159,10 @@ async function runScan(folderId: number, discovered: DiscoveredFile[]): Promise<
 
     try {
       // Parse with bounded concurrency: the pool round-robins jobs, we just
-      // keep a rolling window so we never hold 20k Files in memory at once.
-      const WINDOW = 16;
+      // keep a rolling window so we never hold many Files in memory at once.
+      // Kept modest so low-RAM phones don't choke holding this many decoded
+      // Files (with embedded art) at the same time.
+      const WINDOW = 8;
       let cursor = 0;
       const inFlight = new Set<Promise<void>>();
 
