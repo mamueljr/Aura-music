@@ -168,7 +168,8 @@ async function runScan(folderId: number, discovered: DiscoveredFile[]): Promise<
         const prev = existingByPath.get(d.path);
         try {
           const file = await d.getFile();
-          const { metadata } = await pool.parse(file, d.path);
+          const { metadata, error } = await pool.parse(file, d.path);
+          if (error) console.warn(`[scan] ${d.path}: ${error}`);
           const fileName = d.path.split('/').pop() ?? d.path;
           const titleFromName = fileName.replace(/\.[^.]+$/, '');
 
@@ -212,13 +213,12 @@ async function runScan(folderId: number, discovered: DiscoveredFile[]): Promise<
           });
           if (prev) updated += 1;
           else added += 1;
-        } catch {
+        } catch (err) {
           // Unreadable file: skip it, keep scanning.
+          console.error(`[scan] failed to process ${d.path}`, err);
         } finally {
           processed += 1;
-          if (processed % 10 === 0 || processed === toParse.length) {
-            setScan({ phase: 'reading', processed, discovered: toParse.length, added, updated });
-          }
+          setScan({ phase: 'reading', processed, discovered: toParse.length, added, updated });
         }
       };
 
