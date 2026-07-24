@@ -1,23 +1,12 @@
 /// <reference lib="webworker" />
-import { parseBlob } from 'music-metadata';
+import { parseAudioMetadata, type ParsedMetadata } from './parseMetadata';
+
+export type { ParsedMetadata };
 
 export interface MetadataRequest {
   jobId: number;
   file: File;
   path: string;
-}
-
-export interface ParsedMetadata {
-  title?: string;
-  artist?: string;
-  albumArtist?: string;
-  album?: string;
-  genre?: string;
-  year?: number;
-  trackNo?: number;
-  discNo?: number;
-  duration: number;
-  cover?: { data: ArrayBuffer; format: string };
 }
 
 export interface MetadataResponse {
@@ -31,31 +20,7 @@ export interface MetadataResponse {
 self.onmessage = async (event: MessageEvent<MetadataRequest>) => {
   const { jobId, file, path } = event.data;
   try {
-    const parsed = await parseBlob(file, { duration: true });
-    const { common, format } = parsed;
-    const picture = common.picture?.[0];
-
-    const metadata: ParsedMetadata = {
-      title: common.title ?? undefined,
-      artist: common.artist ?? common.artists?.[0],
-      albumArtist: common.albumartist ?? undefined,
-      album: common.album ?? undefined,
-      genre: common.genre?.[0],
-      year: common.year ?? undefined,
-      trackNo: common.track?.no ?? undefined,
-      discNo: common.disk?.no ?? undefined,
-      duration: format.duration ?? 0,
-      cover: picture
-        ? {
-            data: picture.data.buffer.slice(
-              picture.data.byteOffset,
-              picture.data.byteOffset + picture.data.byteLength,
-            ) as ArrayBuffer,
-            format: picture.format,
-          }
-        : undefined,
-    };
-
+    const metadata = await parseAudioMetadata(file);
     const response: MetadataResponse = { jobId, ok: true, path, metadata };
     self.postMessage(response, metadata.cover ? [metadata.cover.data] : []);
   } catch (error) {

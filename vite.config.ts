@@ -1,3 +1,4 @@
+import { execSync } from 'node:child_process';
 import path from 'node:path';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
@@ -7,8 +8,24 @@ import { VitePWA } from 'vite-plugin-pwa';
 // Deployed at https://mamueljr.github.io/Aura-music/
 const BASE = process.env.VITE_BASE ?? '/Aura-music/';
 
+// A short build stamp so we can confirm which version a device is actually
+// running (useful when a cached service worker serves a stale bundle).
+function buildStamp(): string {
+  let sha = 'dev';
+  try {
+    sha = execSync('git rev-parse --short HEAD').toString().trim();
+  } catch {
+    // not a git checkout / git unavailable
+  }
+  const date = new Date().toISOString().slice(0, 16).replace('T', ' ');
+  return `${sha} · ${date}`;
+}
+
 export default defineConfig({
   base: BASE,
+  define: {
+    __APP_VERSION__: JSON.stringify(buildStamp()),
+  },
   plugins: [
     react(),
     tailwindcss(),

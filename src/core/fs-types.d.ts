@@ -23,3 +23,6 @@ interface Window {
     startIn?: string;
   }): Promise<FileSystemDirectoryHandle>;
 }
+
+/** Build stamp injected by Vite (`define`) — short git sha + build date. */
+declare const __APP_VERSION__: string;

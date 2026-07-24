@@ -39,6 +39,7 @@ export default function AboutPage() {
             <p className="text-sm text-muted-foreground">
               {t('about.version', { version: APP_VERSION })}
             </p>
+            <p className="mt-0.5 font-mono text-[11px] text-muted-foreground/60">{__APP_VERSION__}</p>
           </div>
           <p className="max-w-md text-sm text-muted-foreground">{t('about.body')}</p>
           <div className="mt-1 flex flex-wrap items-center justify-center gap-2">
